@@ -52,23 +52,60 @@ export default function VideoRecorderScreen() {
       setIsProcessing(true);
       setPrediction(null);
 
+      // Aguarda um momento antes de iniciar a requisição
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Criar um FormData para enviar o vídeo
       const formData = new FormData();
-      formData.append('video', {
+      const videoFile = {
         uri: selectedVideo,
         type: 'video/mp4',
         name: 'video.mp4'
-      } as any);
+      };
+      
+      formData.append('video', videoFile as any);
+
+      console.log('Preparando requisição para API...');
+      console.log('URL:', `${API_URL}/predict`);
+      console.log('Video URI:', selectedVideo);
+      
+      // Criar uma nova instância do Axios para cada requisição
+      const axiosInstance = axios.create({
+        timeout: 60000, // Aumentado para 60 segundos
+        headers: {
+          'Accept': 'application/json',
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
+
+      // Adicionar interceptor para logs
+      axiosInstance.interceptors.request.use(request => {
+        console.log('Iniciando requisição:', request);
+        return request;
+      });
+
+      axiosInstance.interceptors.response.use(
+        response => {
+          console.log('Resposta recebida:', response);
+          return response;
+        },
+        error => {
+          console.error('Erro na requisição:', error);
+          return Promise.reject(error);
+        }
+      );
 
       console.log('Enviando vídeo para API...');
       
       // Enviar para a API
-      const response = await axios.post(`${API_URL}/predict`, formData, {
+      const response = await axiosInstance.post(`${API_URL}/predict`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Accept': 'application/json',
         },
-        timeout: 30000, // 30 segundos de timeout
+        transformRequest: (data, headers) => {
+          return data;
+        },
       });
 
       console.log('Resposta da API:', JSON.stringify(response.data, null, 2));
@@ -107,6 +144,13 @@ export default function VideoRecorderScreen() {
       let errorDetails = 'Tente novamente';
 
       if (axios.isAxiosError(error)) {
+        console.error('Detalhes do erro Axios:', {
+          message: error.message,
+          code: error.code,
+          response: error.response,
+          request: error.request
+        });
+
         if (error.code === 'ECONNABORTED') {
           errorMessage = 'Tempo limite excedido';
           errorDetails = 'A conexão com o servidor demorou muito';
