@@ -12,6 +12,16 @@ import AboutScreen from './screens/AboutScreen';
 import CrosswordScreen from './screens/CrosswordScreen';
 import WordSearchScreen from './screens/WordSearchScreen';
 import VideoRecorderScreen from './screens/VideoRecorderScreen';
+import FamilyScreen from './screens/FamilyScreen';
+import FamilyModuleScreen from './screens/FamilyModuleScreen';
+import FriendsScreen from './screens/FriendsScreen';
+import FriendsModuleScreen from './screens/FriendsModuleScreen';
+import AnimalsScreen from './screens/AnimalsScreen';
+import AnimalsModuleScreen from './screens/AnimalsModuleScreen';
+import FruitsScreen from './screens/FruitsScreen';
+import FruitsModuleScreen from './screens/FruitsModuleScreen';
+import SaudationScreen from './screens/SaudationScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 
 import { RootStackParamList } from './types';
 
@@ -49,6 +59,16 @@ export default function App() {
         <Stack.Screen name="Crossword" component={CrosswordScreen} />
         <Stack.Screen name="WordSearch" component={WordSearchScreen} />
         <Stack.Screen name="VideoRecorder" component={VideoRecorderScreen} />
+        <Stack.Screen name="Family" component={FamilyScreen} />
+        <Stack.Screen name="FamilyModule" component={FamilyModuleScreen} />
+        <Stack.Screen name="Friends" component={FriendsScreen} />
+        <Stack.Screen name="FriendsModule" component={FriendsModuleScreen} />
+        <Stack.Screen name="Animals" component={AnimalsScreen} />
+        <Stack.Screen name="AnimalsModule" component={AnimalsModuleScreen} />
+        <Stack.Screen name="Fruits" component={FruitsScreen} />
+        <Stack.Screen name="FruitsModule" component={FruitsModuleScreen} />
+        <Stack.Screen name="Saudation" component={SaudationScreen} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>
