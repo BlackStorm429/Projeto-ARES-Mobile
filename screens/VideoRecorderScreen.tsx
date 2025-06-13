@@ -1,318 +1,300 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import Slider from '@react-native-community/slider';
-import { Camera, CameraView } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
+import { Video, ResizeMode } from 'expo-av';
+import * as ImagePicker from 'expo-image-picker';
+import { MaterialIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
-const VideoRecorderScreen = () => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [cameraType, setCameraType] = useState<'back' | 'front'>('back');
-  const [zoom, setZoom] = useState(0); // 0 = 1x, 1 = máximo
-  const [recordingTime, setRecordingTime] = useState(0);
-  const cameraRef = useRef<any>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const recordingStartTime = useRef<number | null>(null);
+const { width } = Dimensions.get('window');
+const API_URL = 'http://74.163.240.20:8000';
 
-  React.useEffect(() => {
-    (async () => {
-      const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-      const mediaStatus = await MediaLibrary.requestPermissionsAsync();
-      setHasPermission(
-        cameraStatus === 'granted' &&
-        mediaStatus.status === 'granted'
-      );
-    })();
-  }, []);
+export default function VideoRecorderScreen() {
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [prediction, setPrediction] = useState<string | null>(null);
+  const videoRef = useRef<Video>(null);
 
-  React.useEffect(() => {
-    if (isRecording) {
-      timerRef.current = setInterval(() => {
-        setRecordingTime((prev) => prev + 1);
-      }, 1000);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-      setRecordingTime(0);
+  const pickVideo = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        allowsEditing: true,
+        quality: 1,
+        videoMaxDuration: 10,
+      });
+
+      if (!result.canceled && result.assets[0].uri) {
+        setSelectedVideo(result.assets[0].uri);
+        setPrediction(null); // Limpa predição anterior
+      }
+    } catch (error) {
+      console.error('Erro ao selecionar vídeo:', error);
+      Alert.alert('Erro', 'Não foi possível selecionar o vídeo');
     }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isRecording]);
+  };
 
-  const startRecording = async () => {
-    if (!hasPermission) {
-      Alert.alert('Permissão', 'Permissões necessárias não concedidas.');
+  const processVideo = async () => {
+    if (!selectedVideo) {
+      Alert.alert('Atenção', 'Selecione um vídeo primeiro');
       return;
     }
-    if (cameraRef.current) {
-      setIsRecording(true);
-      setRecordingTime(0);
-      recordingStartTime.current = Date.now();
-      try {
-        const video = await cameraRef.current.recordAsync({ mute: true });
-        setIsRecording(false);
-        await saveVideo(video.uri);
-      } catch (error) {
-        setIsRecording(false);
-        const msg = error && typeof error === 'object' && 'message' in error ? (error as any).message : String(error);
-        Alert.alert('Erro ao gravar', msg);
-      }
-    }
-  };
 
-  const stopRecording = () => {
-    if (cameraRef.current) {
-      // Previne parar muito rápido
-      if (recordingStartTime.current && Date.now() - recordingStartTime.current < 1200) {
-        Alert.alert('Atenção', 'Grave pelo menos 1 segundo antes de parar.');
-        return;
-      }
-      cameraRef.current.stopRecording();
-      setIsRecording(false);
-    }
-  };
-
-  const saveVideo = async (uri: string) => {
     try {
-      const asset = await MediaLibrary.createAssetAsync(uri);
-      Alert.alert('Vídeo salvo!', 'O vídeo foi salvo na galeria. Confira no app Galeria ou Meus Arquivos.');
+      setIsProcessing(true);
+      setPrediction(null);
+
+      // Criar um FormData para enviar o vídeo
+      const formData = new FormData();
+      formData.append('video', {
+        uri: selectedVideo,
+        type: 'video/mp4',
+        name: 'video.mp4'
+      } as any);
+
+      console.log('Enviando vídeo para API...');
+      
+      // Enviar para a API
+      const response = await axios.post(`${API_URL}/predict`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+        },
+        timeout: 30000, // 30 segundos de timeout
+      });
+
+      console.log('Resposta da API:', JSON.stringify(response.data, null, 2));
+
+      // Atualizar o estado com a predição
+      if (response.data) {
+        // Tenta diferentes formatos possíveis de resposta
+        const prediction = response.data.prediction || 
+                          response.data.result || 
+                          response.data.label || 
+                          response.data.text ||
+                          JSON.stringify(response.data);
+                          
+        setPrediction(prediction);
+        
+        Toast.show({
+          type: 'success',
+          text1: 'Vídeo processado com sucesso!',
+          position: 'top',
+          visibilityTime: 2000,
+        });
+      } else {
+        throw new Error('Resposta vazia da API');
+      }
     } catch (error) {
-      const msg = error && typeof error === 'object' && 'message' in error ? (error as any).message : String(error);
-      Alert.alert('Erro ao salvar vídeo', msg);
+      console.error('Erro ao processar vídeo:', error);
+      
+      let errorMessage = 'Erro ao processar vídeo';
+      let errorDetails = 'Tente novamente';
+
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNABORTED') {
+          errorMessage = 'Tempo limite excedido';
+          errorDetails = 'A conexão com o servidor demorou muito';
+        } else if (!error.response) {
+          errorMessage = 'Erro de conexão';
+          errorDetails = 'Verifique sua conexão com a internet';
+        } else if (error.response.status === 413) {
+          errorMessage = 'Vídeo muito grande';
+          errorDetails = 'Tente selecionar um vídeo mais curto';
+        } else {
+          errorMessage = `Erro ${error.response.status}`;
+          errorDetails = error.response.data?.message || 
+                        error.response.data?.error || 
+                        JSON.stringify(error.response.data) || 
+                        'Tente novamente';
+        }
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: errorMessage,
+        text2: errorDetails,
+        position: 'top',
+        visibilityTime: 3000,
+      });
+    } finally {
+      setIsProcessing(false);
     }
-  };
-
-  const toggleCameraType = () => {
-    setCameraType(current => (current === 'back' ? 'front' : 'back'));
-  };
-
-  const formatTime = (seconds: number) => {
-    const min = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const sec = (seconds % 60).toString().padStart(2, '0');
-    return `${min}:${sec}`;
-  };
-
-  if (hasPermission === null) {
-    return <Text>Solicitando permissão...</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>Permissão negada para acessar a câmera.</Text>;
-  }
-
-  // Zoom visual para mostrar 1x até 8x
-  const getZoomLabel = () => {
-    // expo-camera: zoom 0 = 1x, 1 = 8x
-    const zoomValue = 1 + zoom * 7;
-    return `${zoomValue.toFixed(1)}x`;
   };
 
   return (
     <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        facing={cameraType}
-        ref={cameraRef}
-        zoom={zoom}
-      >
-        {/* Contador de tempo de gravação */}
-        {isRecording && (
-          <View style={styles.timerContainer}>
-            <View style={styles.timerDot} />
-            <Text style={styles.timerText}>{formatTime(recordingTime)}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Tradução de Libras</Text>
+        <Text style={styles.subtitle}>
+          Selecione um vídeo para traduzir os sinais de libras
+        </Text>
+      </View>
+
+      <View style={styles.videoContainer}>
+        {selectedVideo ? (
+          <Video
+            ref={videoRef}
+            source={{ uri: selectedVideo }}
+            style={styles.video}
+            useNativeControls
+            resizeMode={ResizeMode.CONTAIN}
+            isLooping
+          />
+        ) : (
+          <View style={styles.placeholderContainer}>
+            <MaterialIcons name="video-library" size={64} color="#666" />
+            <Text style={styles.placeholderText}>
+              Nenhum vídeo selecionado
+            </Text>
           </View>
         )}
-        {/* Seletor de modo com zoom acima de VÍDEO (apenas visual agora) */}
-        <View style={styles.modeSelectorContainer}>
-          <View style={{flex:1, alignItems:'center'}} />
-          <View style={styles.modeSelectorCenter}>
-            <View style={styles.zoomIndicatorAbove}>
-              <Text style={styles.zoomText}>{getZoomLabel()}</Text>
-            </View>
-            <View style={styles.modeSelector}>
-              <Text style={styles.modeText}>FOTO</Text>
-              <View style={styles.selectedMode}><Text style={styles.selectedModeText}>VÍDEO</Text></View>
-              <Text style={styles.modeText}>MAIS</Text>
-            </View>
-            {/* Slider de zoom */}
-            <Slider
-              style={{width: 180, marginTop: 8}}
-              minimumValue={0}
-              maximumValue={1}
-              step={0.01}
-              value={zoom}
-              onValueChange={setZoom}
-              minimumTrackTintColor="#fff"
-              maximumTrackTintColor="#888"
-              thumbTintColor="#fff"
-            />
-          </View>
-          <View style={{flex:1, alignItems:'center'}} />
-        </View>
-        {/* Barra inferior com botões */}
-        <View style={styles.bottomBar}>
-          {/* Botão de galeria (imagem estática como exemplo) */}
-          <TouchableOpacity style={styles.galleryButton}>
-            <Image source={{uri: 'https://img.icons8.com/ios-filled/50/ffffff/picture.png'}} style={styles.galleryIcon} />
-          </TouchableOpacity>
-          {/* Botão de gravação */}
+      </View>
+
+      <View style={styles.controls}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={pickVideo}
+          disabled={isProcessing}
+        >
+          <MaterialIcons name="upload-file" size={24} color="white" />
+          <Text style={styles.buttonText}>Selecionar Vídeo</Text>
+        </TouchableOpacity>
+
+        {selectedVideo && !isProcessing && (
           <TouchableOpacity
-            onPress={isRecording ? stopRecording : startRecording}
-            style={styles.recordButton}
-            activeOpacity={0.7}
+            style={[styles.button, styles.processButton]}
+            onPress={processVideo}
           >
-            <View style={[styles.innerCircle, isRecording && styles.innerCircleRecording]} />
+            <MaterialIcons name="translate" size={24} color="white" />
+            <Text style={styles.buttonText}>Traduzir</Text>
           </TouchableOpacity>
-          {/* Botão de inverter câmera */}
-          <TouchableOpacity
-            onPress={toggleCameraType}
-            style={styles.flipButton}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="camera-reverse" size={36} color="white" />
-          </TouchableOpacity>
+        )}
+      </View>
+
+      {isProcessing && (
+        <View style={styles.processingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.processingText}>Processando vídeo...</Text>
         </View>
-      </CameraView>
+      )}
+
+      {prediction && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultTitle}>Tradução:</Text>
+          <Text style={styles.resultText}>{prediction}</Text>
+        </View>
+      )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
   },
-  camera: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  header: {
+    marginBottom: 20,
   },
-  timerContainer: {
-    position: 'absolute',
-    top: 30,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    zIndex: 30,
-  },
-  timerDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'red',
-    marginRight: 8,
-  },
-  timerText: {
-    color: 'white',
-    fontSize: 18,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
   },
-  modeSelectorContainer: {
-    position: 'absolute',
-    bottom: 120,
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  modeSelectorCenter: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  zoomIndicatorAbove: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    marginBottom: 4,
-    alignSelf: 'center',
-  },
-  zoomText: {
+  subtitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
   },
-  modeSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  modeText: {
-    color: 'white',
-    fontSize: 16,
-    marginHorizontal: 18,
-    opacity: 0.7,
-  },
-  selectedMode: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  videoContainer: {
+    width: width - 40,
+    height: width - 40,
+    backgroundColor: '#000',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 2,
-    marginHorizontal: 8,
+    overflow: 'hidden',
+    marginBottom: 20,
   },
-  selectedModeText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  video: {
+    flex: 1,
   },
-  bottomBar: {
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  placeholderText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  button: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 40,
-    paddingBottom: 30,
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-  },
-  galleryButton: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  galleryIcon: {
-    width: 36,
-    height: 36,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 8,
+    gap: 8,
   },
-  recordButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  processButton: {
+    backgroundColor: '#34C759',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  processingContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  processingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+  },
+  resultContainer: {
     backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: 'rgba(255,0,0,0.7)',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  innerCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'red',
+  resultTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
   },
-  innerCircleRecording: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: 'red',
+  resultText: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
   },
-  flipButton: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 10,
-  },
-});
-
-export default VideoRecorderScreen;
+}); 
