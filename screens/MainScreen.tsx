@@ -148,15 +148,19 @@ export default function Main() {
         {/* Seção Jogos */}
         <Text style={[styles.sectionTitle, { color: Colors[scheme].text }]}>Jogos</Text>
         <View style={styles.gamesWrapper}>
-          {games.map(g => (
-            <TouchableOpacity
-              key={g.title}
-              style={[styles.itemCard, { backgroundColor: Colors[scheme].buttonBackground }]}
-            >
-              <Image source={g.icon} style={styles.itemIcon} resizeMode="contain" />
-              <Text style={[styles.itemTitle, { color: Colors[scheme].text }]}>{g.title}</Text>
-            </TouchableOpacity>
-          ))}
+          {games.map(g => {
+            const screen = g.title === 'Palavras Cruzadas' ? 'Crossword' : 'WordSearch';
+            return (
+              <TouchableOpacity
+                key={g.title}
+                onPress={() => navigation.navigate(screen)}
+                style={[styles.itemCard, { backgroundColor: Colors[scheme].buttonBackground }]}
+              >
+                <Image source={g.icon} style={styles.itemIcon} resizeMode="contain" />
+                <Text style={[styles.itemTitle, { color: Colors[scheme].text }]}>{g.title}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Seção Módulos */}

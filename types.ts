@@ -5,4 +5,6 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   Settings: undefined; 
   About: undefined;
+  Crossword: undefined;
+  WordSearch: undefined;
 };
