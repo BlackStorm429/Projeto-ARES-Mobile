@@ -133,7 +133,7 @@ export default function About() {
       <View style={styles.developerContainer}>
         {/* Developer 1 */}
         <View style={styles.developerItem}>
-          <Image source={require('../assets/images/carol.png')} style={styles.devImage} />
+          <Image source={require('../assets/images/carol.jpeg')} style={styles.devImage} />
           <View>
             <Text style={styles.devName}>Carolina Morais Nigri</Text>
             <Text style={styles.devRole}>Front-end & Back-end</Text>
@@ -142,7 +142,7 @@ export default function About() {
 
         {/* Developer 2 */}
         <View style={styles.developerItem}>
-          <Image source={require('../assets/images/jerson.png')} style={styles.devImage} />
+          <Image source={require('../assets/images/jerson.jpeg')} style={styles.devImage} />
           <View>
             <Text style={styles.devName}>Jerson Vitor de Paula Gomes</Text>
             <Text style={styles.devRole}>Front-end & Back-end</Text>
@@ -151,7 +151,7 @@ export default function About() {
 
         {/* Developer 3 */}
         <View style={styles.developerItem}>
-          <Image source={require('../assets/images/lara.png')} style={styles.devImage} />
+          <Image source={require('../assets/images/lara.jpeg')} style={styles.devImage} />
           <View>
             <Text style={styles.devName}>Lara Brigida Rezende Souza</Text>
             <Text style={styles.devRole}>Front-end & Back-end</Text>
@@ -160,7 +160,7 @@ export default function About() {
 
         {/* Developer 4 */}
         <View style={styles.developerItem}>
-          <Image source={require('../assets/images/victor.png')} style={styles.devImage} />
+          <Image source={require('../assets/images/victor.jpeg')} style={styles.devImage} />
           <View>
             <Text style={styles.devName}>Victor Cabral de Souza Oliveira</Text>
             <Text style={styles.devRole}>Front-end & Back-end</Text>
@@ -169,7 +169,7 @@ export default function About() {
 
         {/* Developer 5 */}
         <View style={styles.developerItem}>
-          <Image source={require('../assets/images/wallace.png')} style={styles.devImage} />
+          <Image source={require('../assets/images/wallace.jpeg')} style={styles.devImage} />
           <View>
             <Text style={styles.devName}>Wallace Freitas Oliveira</Text>
             <Text style={styles.devRole}>Front-end & Back-end</Text>

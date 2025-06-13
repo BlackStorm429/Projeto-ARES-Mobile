@@ -11,6 +11,7 @@ import SignInScreen from './screens/SignInScreen';
 import AboutScreen from './screens/AboutScreen';
 import CrosswordScreen from './screens/CrosswordScreen';
 import WordSearchScreen from './screens/WordSearchScreen';
+import VideoRecorderScreen from './screens/VideoRecorderScreen';
 
 import { RootStackParamList } from './types';
 
@@ -47,6 +48,7 @@ export default function App() {
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="Crossword" component={CrosswordScreen} />
         <Stack.Screen name="WordSearch" component={WordSearchScreen} />
+        <Stack.Screen name="VideoRecorder" component={VideoRecorderScreen} />
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>

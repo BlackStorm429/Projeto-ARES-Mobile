@@ -7,4 +7,5 @@ export type RootStackParamList = {
   About: undefined;
   Crossword: undefined;
   WordSearch: undefined;
+  VideoRecorder: undefined;
 };
