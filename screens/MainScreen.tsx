@@ -81,7 +81,7 @@ export default function Main() {
         <View style={[styles.menuOverlay, { backgroundColor: Colors[scheme].buttonBackground }]}>  
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => { setMenuVisible(false); navigation.navigate('Settings'); }}
+            onPress={() => { setMenuVisible(false); navigation.navigate('Notifications'); }}
           >
             <Text style={[styles.menuText, { color: Colors[scheme].text }]}>Configurações</Text>
           </TouchableOpacity>
@@ -124,7 +124,7 @@ export default function Main() {
         </View>
 
         {/* Card de Unidade */}
-        <View style={[styles.cardContainer, { backgroundColor: Colors[scheme].buttonBackground }]}>  
+        <TouchableOpacity onPress={() => navigation.navigate('Saudation')} style={[styles.cardContainer, { backgroundColor: Colors[scheme].buttonBackground }]}>  
           <View style={styles.cardTextContainer}>
             <Text style={[styles.cardSubtitle, { color: Colors[scheme].textSecondary }]}>Unidade atual</Text>
             <Text style={[styles.cardTitle, { color: Colors[scheme].text }]}>Saudações</Text>
@@ -136,7 +136,7 @@ export default function Main() {
               resizeMode="contain"
             />
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Módulo Tradutor */}
         <Text style={[styles.sectionTitle, { color: Colors[scheme].text }]}>Tradutor</Text>
@@ -177,6 +177,19 @@ export default function Main() {
             <TouchableOpacity
               key={m.title}
               style={[styles.moduleCard, { backgroundColor: Colors[scheme].buttonBackground }]}
+              onPress={() => {
+                if (m.title === 'Familia') {
+                  navigation.navigate('Family');
+                } else if (m.title === 'Amigos') {
+                  navigation.navigate('Friends');
+                } else if (m.title === 'Animais') {
+                  navigation.navigate('Animals');
+                } else if (m.title === 'Frutas') {
+                  navigation.navigate('Fruits');
+                } else {
+                  // ação padrão (pode ser um Toast ou navegação futura)
+                }
+              }}
             >
               <Image source={m.icon} style={styles.moduleIcon} resizeMode="contain" />
               <Text style={[styles.moduleTitle, { color: Colors[scheme].text }]}>{m.title}</Text>

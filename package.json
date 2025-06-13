@@ -24,7 +24,8 @@
     "react-native": "0.79.2",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-toast-message": "^2.3.0",
-    "ti6": "file:"
+    "ti6": "file:",
+    "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

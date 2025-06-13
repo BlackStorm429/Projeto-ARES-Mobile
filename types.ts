@@ -8,4 +8,14 @@ export type RootStackParamList = {
   Crossword: undefined;
   WordSearch: undefined;
   VideoRecorder: undefined;
+  Family: undefined;
+  FamilyModule: { moduleNumber: number };
+  Friends: undefined;
+  FriendsModule: { moduleNumber: number };
+  Animals: undefined;
+  AnimalsModule: { moduleNumber: number };
+  Fruits: undefined;
+  FruitsModule: { moduleNumber: number };
+  Saudation: undefined;
+  Notifications: undefined;
 };
