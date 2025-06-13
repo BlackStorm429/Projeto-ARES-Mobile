@@ -44,7 +44,7 @@ const WORDS: WordInfo[] = [
       { row: 1, col: 9 },
     ],
     image: require('../assets/images/phone.png'),
-    circle: [1, 10],
+    circle: [1, 9.5],
     arrow: 'arrow-back',
   },
   // FOME vertical
@@ -57,7 +57,7 @@ const WORDS: WordInfo[] = [
       { row: 4, col: 5 },
     ],
     image: require('../assets/images/hungry.png'),
-    circle: [0, 5],
+    circle: [0.5, 5],
     arrow: 'arrow-down',
   },
   // COMER horizontal
@@ -71,8 +71,8 @@ const WORDS: WordInfo[] = [
       { row: 4, col: 6 },
     ],
     image: require('../assets/images/eat.png'),
-    circle: [3, 1],
-    arrow: 'arrow-forward',
+    circle: [4, 6.5],
+    arrow: 'arrow-back',
   },
   // RUA vertical
   {
@@ -83,8 +83,8 @@ const WORDS: WordInfo[] = [
       { row: 6, col: 6 },
     ],
     image: require('../assets/images/street.png'),
-    circle: [3, 1],
-    arrow: 'arrow-forward',
+    circle: [3.5, 6],
+    arrow: 'arrow-down',
   },
   // ÁGUA horizontal
   {
@@ -96,7 +96,7 @@ const WORDS: WordInfo[] = [
       { row: 6, col: 9 },
     ],
     image: require('../assets/images/water.png'),
-    circle: [5, 3],
+    circle: [6, 5.5],
     arrow: 'arrow-forward',
   },
   // AMIGO vertical
@@ -110,8 +110,8 @@ const WORDS: WordInfo[] = [
       { row: 10, col: 9 },
     ],
     image: require('../assets/images/friend.png'),
-    circle: [3, 1],
-    arrow: 'arrow-forward',
+    circle: [10.5, 9],
+    arrow: 'arrow-up',
   },
   // LICENÇA horizontal
   {
@@ -126,7 +126,7 @@ const WORDS: WordInfo[] = [
       { row: 8, col: 14 },
     ],
     image: require('../assets/images/excuse-me.png'),
-    circle: [7, 3],
+    circle: [8, 7.5],
     arrow: 'arrow-forward',
   },
   // TRABALHO horizontal
@@ -143,8 +143,8 @@ const WORDS: WordInfo[] = [
       { row: 10, col: 9 },
     ],
     image: require('../assets/images/work.png'),
-    circle: [9, 1],
-    arrow: 'arrow-forward',
+    circle: [10, 9.5],
+    arrow: 'arrow-back',
   },
 ];
 
@@ -235,14 +235,37 @@ export default function CrosswordScreen() {
     return WORDS.map((w, idx) => {
       const [row, col] = w.circle;
       const imgSize = cellSize * 1.2;
-      const top = margin + row * (cellSize + margin) + (cellSize - imgSize) / 2;
-      const left = margin + col * (cellSize + margin) + (cellSize - imgSize) / 2;
-      let arrowTop = top + imgSize / 2;
-      let arrowLeft = left + imgSize;
-      if (w.arrow === 'arrow-down') {
-        arrowTop = top + imgSize;
-        arrowLeft = left + imgSize / 2 - cellSize * 0.35;
+      // Posição base da célula inicial
+      const cellTop = margin + row * (cellSize + margin);
+      const cellLeft = margin + col * (cellSize + margin);
+      let imgTop = cellTop;
+      let imgLeft = cellLeft;
+      let arrowTop = cellTop;
+      let arrowLeft = cellLeft;
+
+      // Ajuste para cada direção
+      if (w.arrow === 'arrow-forward') {
+        imgLeft = cellLeft - imgSize - 8; // imagem à esquerda
+        imgTop = cellTop + (cellSize - imgSize) / 2;
+        arrowLeft = cellLeft - cellSize * 0.2; // seta colada à célula
+        arrowTop = cellTop + (cellSize - cellSize * 0.7) / 2;
+      } else if (w.arrow === 'arrow-back') {
+        imgLeft = cellLeft + cellSize + 8; // imagem à direita
+        imgTop = cellTop + (cellSize - imgSize) / 2;
+        arrowLeft = cellLeft + cellSize; // seta colada à célula
+        arrowTop = cellTop + (cellSize - cellSize * 0.7) / 2;
+      } else if (w.arrow === 'arrow-down') {
+        imgTop = cellTop - imgSize - 8; // imagem acima
+        imgLeft = cellLeft + (cellSize - imgSize) / 2;
+        arrowTop = cellTop - cellSize * 0.2; // seta colada à célula
+        arrowLeft = cellLeft + (cellSize - cellSize * 0.7) / 2;
+      } else if (w.arrow === 'arrow-up') {
+        imgTop = cellTop + cellSize + 8; // imagem abaixo
+        imgLeft = cellLeft + (cellSize - imgSize) / 2;
+        arrowTop = cellTop + cellSize; // seta colada à célula
+        arrowLeft = cellLeft + (cellSize - cellSize * 0.7) / 2;
       }
+
       return (
         <React.Fragment key={`img-arrow-${idx}`}>
           <Image
@@ -252,8 +275,8 @@ export default function CrosswordScreen() {
               height: imgSize,
               resizeMode: 'contain',
               position: 'absolute',
-              top,
-              left,
+              top: imgTop,
+              left: imgLeft,
               zIndex: 10,
             }}
           />
@@ -265,7 +288,7 @@ export default function CrosswordScreen() {
               position: 'absolute',
               top: arrowTop,
               left: arrowLeft,
-              zIndex: 10,
+              zIndex: 11,
             }}
           />
         </React.Fragment>
