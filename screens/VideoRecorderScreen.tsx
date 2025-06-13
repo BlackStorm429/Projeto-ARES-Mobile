@@ -76,7 +76,8 @@ export default function VideoRecorderScreen() {
       // Atualizar o estado com a predição
       if (response.data) {
         // Tenta diferentes formatos possíveis de resposta
-        const prediction = response.data.prediction || 
+        const prediction = response.data.gesture || 
+                          response.data.prediction || 
                           response.data.result || 
                           response.data.label || 
                           response.data.text ||
@@ -90,6 +91,12 @@ export default function VideoRecorderScreen() {
           position: 'top',
           visibilityTime: 2000,
         });
+
+        // Limpa o vídeo após processamento bem-sucedido
+        setSelectedVideo(null);
+        if (videoRef.current) {
+          videoRef.current.stopAsync();
+        }
       } else {
         throw new Error('Resposta vazia da API');
       }
@@ -105,7 +112,7 @@ export default function VideoRecorderScreen() {
           errorDetails = 'A conexão com o servidor demorou muito';
         } else if (!error.response) {
           errorMessage = 'Erro de conexão';
-          errorDetails = 'Verifique sua conexão com a internet';
+          errorDetails = 'Verifique sua conexão com a internet e tente novamente';
         } else if (error.response.status === 413) {
           errorMessage = 'Vídeo muito grande';
           errorDetails = 'Tente selecionar um vídeo mais curto';
@@ -125,6 +132,12 @@ export default function VideoRecorderScreen() {
         position: 'top',
         visibilityTime: 3000,
       });
+
+      // Em caso de erro, limpa o vídeo para permitir nova tentativa
+      setSelectedVideo(null);
+      if (videoRef.current) {
+        videoRef.current.stopAsync();
+      }
     } finally {
       setIsProcessing(false);
     }
