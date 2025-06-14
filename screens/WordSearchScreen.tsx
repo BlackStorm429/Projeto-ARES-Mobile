@@ -213,14 +213,14 @@ export default function WordSearchScreen() {
           </View>
         </TouchableOpacity>
 
-        <Text style={[styles.headerTitle, { color: Colors[scheme].text }]}>
+        <Text style={[styles.headerTitle, { color: '#ECAE55' }]}>
           Caça Palavras
         </Text>
 
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
           <View style={[styles.iconContainer, { backgroundColor: Colors[scheme].buttonBackground }]}>
             <Image
-              source={require('../assets/images/menu-icon.png')}
+              source={require('../assets/images/user-icon.png')}
               style={styles.headerImage}
             />
           </View>
@@ -337,7 +337,7 @@ export default function WordSearchScreen() {
             onPress={resetGame}
             activeOpacity={0.7}
           >
-            <Text style={[styles.buttonText, { color: Colors[scheme].text }]}>
+            <Text style={[styles.buttonText, { color: '#ECAE55' }]}>
               Tentar{'\n'}Novamente
             </Text>
           </TouchableOpacity>
@@ -352,7 +352,7 @@ export default function WordSearchScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Text style={[styles.buttonText, { color: Colors[scheme].text }]}>
+            <Text style={[styles.buttonText, { color: '#ECAE55' }]}>
               Próximo
             </Text>
           </TouchableOpacity>
@@ -371,11 +371,14 @@ const styles = StyleSheet.create({
   // Header idêntico ao AboutScreen
   header: {
     width: '100%',
-    paddingTop: 40,
+    paddingTop: 60,
     paddingHorizontal: 20,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 100,
+    elevation: 100,
+    backgroundColor: 'transparent',
   },
   iconContainer: {
     padding: 8,

@@ -220,7 +220,7 @@ export default function VideoRecorderScreen() {
       </View>
       <View style={styles.header}>
         <Text style={[styles.title, {
-          color: themeColors.text,
+          color: '#ECAE55',
           textShadowColor: '#000',
           textShadowOffset: { width: -1, height: 1 },
           textShadowRadius: 1,

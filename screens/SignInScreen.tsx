@@ -63,7 +63,7 @@ export default function SignIn() {
     },
     appName: {
       fontSize: 28,
-      color: Colors[colorScheme ?? "light"].text,
+      color: '#ECAE55',
       marginBottom: 30,
       fontFamily: 'Boldatin-Bold',
       textShadowColor: '#000',     // cor do contorno
@@ -89,7 +89,7 @@ export default function SignIn() {
       marginBottom: 10,
     },
     loginText: {
-      color: Colors[colorScheme ?? "light"].textButton,
+      color: '#ECAE55',
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -98,7 +98,7 @@ export default function SignIn() {
       marginBottom: 30,
     },
     signupText: {
-      color: Colors[colorScheme ?? "light"].text,
+      color: 'red',
     },
   });
 
@@ -134,12 +134,9 @@ export default function SignIn() {
       <TouchableOpacity style={styles.loginButton} onPress={handleSignInToast}>
         <Text style={styles.loginText}>Entrar</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordScreen')}>
-        <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.signupText}>Ainda não possui cadastro? Cadastre-se</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')}>
-        <Text style={styles.signupText}>Não tem conta? Cadastre-se!</Text>
-      </TouchableOpacity> */}
       <Toast />
     </View>
   );

@@ -11,6 +11,8 @@ type AboutScreenNavigationProp = StackNavigationProp<RootStackParamList, 'About'
 export default function About() {
   const navigation = useNavigation<AboutScreenNavigationProp>();
   const { darkMode } = useTheme();
+  const scheme = darkMode ? 'dark' : 'light';
+  const themeColors = Colors[scheme];
 
   const colorScheme = darkMode ? "dark" : "light";
   const secondaryTextColor = darkMode ? '#ffffff' : '#20285D';
@@ -24,17 +26,19 @@ export default function About() {
     iconContainer: {
       padding: 8,
       borderRadius: 8,
-      backgroundColor: Colors[colorScheme].buttonBackground,
       justifyContent: 'center',
       alignItems: 'center',
     },
     header: {
       width: '100%',
-      paddingTop: 40,
-      paddingHorizontal: 1,
+      paddingTop: 60,
+      paddingHorizontal: 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      zIndex: 100,
+      elevation: 100,
+      backgroundColor: 'transparent',
     },
     headerImage: { 
         width: 24, 
@@ -63,7 +67,7 @@ export default function About() {
       fontSize: 20,
       fontWeight: 'bold',
       paddingBottom: 8,
-      color: Colors[colorScheme ?? "light"].text,
+      color: '#ECAE55',
       marginBottom: 10,
       textShadowColor: '#000',    
       textShadowOffset: { width: -1, height:  1 },
@@ -71,7 +75,7 @@ export default function About() {
     },
     appName: {
       fontSize: 28,
-      color: Colors[colorScheme ?? "light"].text,
+      color: '#ECAE55',
       marginBottom: 30,
       textAlign: 'center',
       fontFamily: 'Boldatin-Bold',
@@ -109,13 +113,13 @@ export default function About() {
         {/* Cabeçalho com botões */}
         <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-                <View style={styles.iconContainer}>
+                <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }]}>
                 <Image source={require('../assets/images/back-icon.png')} style={styles.headerImage} />
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                <View style={styles.iconContainer}>
-                <Image source={require('../assets/images/menu-icon.png')} style={styles.headerImage} />
+                <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }]}>
+                <Image source={require('../assets/images/user-icon.png')} style={styles.headerImage} />
                 </View>
             </TouchableOpacity>
         </View>

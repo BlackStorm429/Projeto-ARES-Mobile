@@ -5,9 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 import * as Font from 'expo-font';
 import { ActivityIndicator, View } from 'react-native';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 import MainScreen from './screens/MainScreen';
 import SignInScreen from './screens/SignInScreen';
+import SignUpScreen from './screens/SignUpScreen';
 import AboutScreen from './screens/AboutScreen';
 import CrosswordScreen from './screens/CrosswordScreen';
 import WordSearchScreen from './screens/WordSearchScreen';
@@ -48,29 +51,34 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Main"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="About" component={AboutScreen} />
-        <Stack.Screen name="Crossword" component={CrosswordScreen} />
-        <Stack.Screen name="WordSearch" component={WordSearchScreen} />
-        <Stack.Screen name="VideoRecorder" component={VideoRecorderScreen} />
-        <Stack.Screen name="Family" component={FamilyScreen} />
-        <Stack.Screen name="FamilyModule" component={FamilyModuleScreen} />
-        <Stack.Screen name="Friends" component={FriendsScreen} />
-        <Stack.Screen name="FriendsModule" component={FriendsModuleScreen} />
-        <Stack.Screen name="Animals" component={AnimalsScreen} />
-        <Stack.Screen name="AnimalsModule" component={AnimalsModuleScreen} />
-        <Stack.Screen name="Fruits" component={FruitsScreen} />
-        <Stack.Screen name="FruitsModule" component={FruitsModuleScreen} />
-        <Stack.Screen name="Saudation" component={SaudationScreen} />
-        <Stack.Screen name="Notifications" component={NotificationsScreen} />
-      </Stack.Navigator>
-      <Toast />
-    </NavigationContainer>
+    <ThemeProvider>
+      <NotificationProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Main"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
+            <Stack.Screen name="Crossword" component={CrosswordScreen} />
+            <Stack.Screen name="WordSearch" component={WordSearchScreen} />
+            <Stack.Screen name="VideoRecorder" component={VideoRecorderScreen} />
+            <Stack.Screen name="Family" component={FamilyScreen} />
+            <Stack.Screen name="FamilyModule" component={FamilyModuleScreen} />
+            <Stack.Screen name="Friends" component={FriendsScreen} />
+            <Stack.Screen name="FriendsModule" component={FriendsModuleScreen} />
+            <Stack.Screen name="Animals" component={AnimalsScreen} />
+            <Stack.Screen name="AnimalsModule" component={AnimalsModuleScreen} />
+            <Stack.Screen name="Fruits" component={FruitsScreen} />
+            <Stack.Screen name="FruitsModule" component={FruitsModuleScreen} />
+            <Stack.Screen name="Saudation" component={SaudationScreen} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          </Stack.Navigator>
+          <Toast />
+        </NavigationContainer>
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }

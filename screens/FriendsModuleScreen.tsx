@@ -24,17 +24,18 @@ export default function FriendsModuleScreen() {
       {/* Cabeçalho com botões */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }] }>
             <Image source={require('../assets/images/back-icon.png')} style={styles.headerImage} />
           </View>
         </TouchableOpacity>
+        <View style={{ width: 24 }} />
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }] }>
             <Image source={require('../assets/images/user-icon.png')} style={styles.headerImage} />
           </View>
         </TouchableOpacity>
       </View>
-      <Text style={[styles.title, { color: themeColors.text, textShadowColor: '#000', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1, marginTop: 24 }]}>Módulo {moduleNumber}</Text>
+      <Text style={[styles.title, { color: '#ECAE55', textShadowColor: '#000', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1, marginTop: 24 }]}>Módulo {moduleNumber}</Text>
       {moduleNumber === 1 ? (
         <WebView
           style={styles.video}
@@ -55,16 +56,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 },
   header: {
     width: '100%',
-    paddingTop: 0,
-    paddingHorizontal: 1,
+    paddingTop: 40,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    zIndex: 100,
+    elevation: 100,
+    backgroundColor: 'transparent',
   },
   iconContainer: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: Colors.light.buttonBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },

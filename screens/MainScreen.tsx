@@ -80,16 +80,22 @@ export default function Main() {
       {menuVisible && (
         <View style={[styles.menuOverlay, { backgroundColor: Colors[scheme].buttonBackground }]}>  
           <TouchableOpacity
-            style={styles.menuItem}
+            style={[
+              styles.menuItem,
+              scheme === 'dark' ? { backgroundColor: '#20285Dcc' } : null,
+            ]}
             onPress={() => { setMenuVisible(false); navigation.navigate('Notifications'); }}
           >
-            <Text style={[styles.menuText, { color: Colors[scheme].text }]}>Configurações</Text>
+            <Text style={[styles.menuText, { color: scheme === 'dark' ? '#ECAE55' : Colors[scheme].text }]}>Configurações</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.menuItem}
+            style={[
+              styles.menuItem,
+              scheme === 'dark' ? { backgroundColor: '#20285Dcc' } : null,
+            ]}
             onPress={() => { setMenuVisible(false); navigation.navigate('About'); }}
           >
-            <Text style={[styles.menuText, { color: Colors[scheme].text }]}>Sobre</Text>
+            <Text style={[styles.menuText, { color: scheme === 'dark' ? '#ECAE55' : Colors[scheme].text }]}>Sobre</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -126,8 +132,8 @@ export default function Main() {
         {/* Card de Unidade */}
         <TouchableOpacity onPress={() => navigation.navigate('Saudation')} style={[styles.cardContainer, { backgroundColor: Colors[scheme].buttonBackground }]}>  
           <View style={styles.cardTextContainer}>
-            <Text style={[styles.cardSubtitle, { color: Colors[scheme].textSecondary }]}>Unidade atual</Text>
-            <Text style={[styles.cardTitle, { color: Colors[scheme].text }]}>Saudações</Text>
+            <Text style={[styles.cardSubtitle, { color: '#EC4C7D' }]}>Unidade atual</Text>
+            <Text style={[styles.cardTitle, { color: scheme === 'dark' ? '#000' : '#ECAE55' }]}>Saudações</Text>
           </View>
           <View style={styles.cardImageWrapper}>
             <Image
@@ -139,7 +145,7 @@ export default function Main() {
         </TouchableOpacity>
 
         {/* Módulo Tradutor */}
-        <Text style={[styles.sectionTitle, { color: Colors[scheme].text }]}>Tradutor</Text>
+        <Text style={[styles.sectionTitle, { color: '#ECAE55' }]}>Tradutor</Text>
         <View style={styles.translatorWrapper}>
           <TouchableOpacity
             style={[styles.translatorCard, { backgroundColor: Colors[scheme].buttonBackground }]}
@@ -151,7 +157,7 @@ export default function Main() {
         </View>
 
         {/* Seção Jogos */}
-        <Text style={[styles.sectionTitle, { color: Colors[scheme].text }]}>Jogos</Text>
+        <Text style={[styles.sectionTitle, { color: '#ECAE55' }]}>Jogos</Text>
         <View style={styles.gamesWrapper}>
           {games.map(g => {
             const screen = g.title === 'Palavras Cruzadas' ? 'Crossword' : 'WordSearch';
@@ -170,7 +176,7 @@ export default function Main() {
 
         {/* Seção Módulos */}
         <View style={styles.modulesHeader}>
-          <Text style={[styles.sectionTitle, { color: Colors[scheme].text }]}>Módulos</Text>
+          <Text style={[styles.sectionTitle, { color: '#ECAE55' }]}>Módulos</Text>
         </View>
         <View style={styles.modulesWrapper}>
           {modules.map(m => (
@@ -192,7 +198,7 @@ export default function Main() {
               }}
             >
               <Image source={m.icon} style={styles.moduleIcon} resizeMode="contain" />
-              <Text style={[styles.moduleTitle, { color: Colors[scheme].text }]}>{m.title}</Text>
+              <Text style={[styles.moduleTitle, { color: scheme === 'dark' ? '#000' : '#ECAE55' }]}>{m.title}</Text>
             </TouchableOpacity>
           ))}
         </View>

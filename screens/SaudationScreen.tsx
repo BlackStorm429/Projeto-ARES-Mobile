@@ -25,24 +25,24 @@ export default function SaudationScreen() {
       {/* Cabeçalho com botões */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }]}>
             <Image source={backIcon} style={styles.headerImage} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }]}>
             <Image source={userIcon} style={styles.headerImage} />
           </View>
         </TouchableOpacity>
       </View>
-      <Text style={[styles.title, { color: themeColors.text, textShadowColor: '#000', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }]}>Saudações</Text>
+      <Text style={[styles.title, { color: '#ECAE55', textShadowColor: '#000', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }]}>Saudações</Text>
       <Text style={[styles.text, { color: themeColors.textSecondary }]}>Que bom que você decidiu aprender um pouco sobre libras. Nos módulos você encontrará diversos vídeos para te ajudar. Aqui temos o alfabeto e os número de 1 a 10 para te ajudar sempre que precisar.</Text>
       <View style={styles.popupsContainer}>
         <TouchableOpacity style={styles.popupBox} onPress={() => setModalVisible('alphabet')}>
-          <Text style={styles.popupText}>Alfabeto</Text>
+          <Text style={[styles.popupText, { color: '#ECAE55' }]}>Alfabeto</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.popupBox} onPress={() => setModalVisible('numerals')}>
-          <Text style={styles.popupText}>Numerais</Text>
+          <Text style={[styles.popupText, { color: '#ECAE55' }]}>Numerais</Text>
         </TouchableOpacity>
       </View>
       {/* Modal Alfabeto */}
@@ -85,16 +85,18 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   header: {
     width: '100%',
-    paddingTop: 10,
-    paddingHorizontal: 1,
+    paddingTop: 60,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    zIndex: 100,
+    elevation: 100,
+    backgroundColor: 'transparent',
   },
   iconContainer: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: Colors.light.buttonBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },

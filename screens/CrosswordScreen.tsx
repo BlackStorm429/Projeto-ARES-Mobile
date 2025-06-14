@@ -330,7 +330,7 @@ export default function CrosswordScreen() {
             ]}
           >
             <Image
-              source={require('../assets/images/menu-icon.png')}
+              source={require('../assets/images/user-icon.png')}
               style={styles.headerImage}
             />
           </View>
@@ -341,7 +341,7 @@ export default function CrosswordScreen() {
       <Text
         style={[
           styles.title,
-          { color: themeColors.text, marginBottom: 32 /* mais espaço antes do grid */ },
+          { color: scheme === 'dark' ? '#ECAE55' : themeColors.text, marginBottom: 32 },
         ]}
       >
         Palavra-Cruzada
@@ -357,7 +357,46 @@ export default function CrosswordScreen() {
           },
         ]}
       >
-        {renderCells()}
+        {(() => {
+          // Renderiza as células do tabuleiro com fundo branco no modo escuro
+          const cells: React.ReactNode[] = [];
+          for (let row = 0; row < NUM_ROWS; row++) {
+            for (let col = 0; col < NUM_COLS; col++) {
+              const key = `${row}-${col}`;
+              if (!gridMap[key]) continue;
+              const letter = grid[key] || '';
+              const top = margin + row * (cellSize + margin);
+              const left = margin + col * (cellSize + margin);
+              cells.push(
+                <View
+                  key={key}
+                  style={[
+                    styles.cell,
+                    {
+                      width: cellSize,
+                      height: cellSize,
+                      top,
+                      left,
+                      backgroundColor: scheme === 'dark' ? '#fff' : 'transparent',
+                    },
+                  ]}
+                >
+                  <TextInput
+                    style={styles.input}
+                    maxLength={1}
+                    value={letter}
+                    onChangeText={(txt) => {
+                      setGrid((prev) => ({ ...prev, [key]: txt.toUpperCase() }));
+                    }}
+                    placeholder=""
+                    placeholderTextColor="#bbb"
+                  />
+                </View>
+              );
+            }
+          }
+          return cells;
+        })()}
         {renderImagesAndArrows()}
       </View>
 
@@ -385,7 +424,7 @@ export default function CrosswordScreen() {
                   style={[
                     styles.wordBoxText,
                     {
-                      color: isStruck ? '#999' : themeColors.text,
+                      color: isStruck ? '#999' : '#000',
                       textDecorationLine: isStruck ? 'line-through' : 'none',
                     },
                   ]}
