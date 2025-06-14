@@ -7,17 +7,32 @@ import {
   Alert,
   ActivityIndicator,
   Dimensions,
+  Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types';
 import { Video, ResizeMode } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
+import { useTheme } from '../contexts/ThemeContext';
+import { Colors } from '../constants/Colors';
+
+const backIcon = require('../assets/images/back-icon.png');
+const userIcon = require('../assets/images/user-icon.png');
 
 const { width } = Dimensions.get('window');
 const API_URL = 'http://74.163.240.20:8000';
 
+type NavProp = StackNavigationProp<RootStackParamList, 'VideoRecorder'>;
+
 export default function VideoRecorderScreen() {
+  const navigation = useNavigation<NavProp>();
+  const { darkMode } = useTheme();
+  const scheme = darkMode ? 'dark' : 'light';
+  const themeColors = Colors[scheme];
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [prediction, setPrediction] = useState<string | null>(null);
@@ -188,12 +203,30 @@ export default function VideoRecorderScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }] }>
+      {/* Header com ícones */}
+      <View style={styles.headerIcons}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }] }>
+            <Image source={backIcon} style={styles.headerImage} />
+          </View>
+        </TouchableOpacity>
+        <View style={{ width: 24 }} />
+        <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+          <View style={[styles.iconContainer, { backgroundColor: themeColors.buttonBackground }] }>
+            <Image source={userIcon} style={styles.headerImage} />
+          </View>
+        </TouchableOpacity>
+      </View>
       <View style={styles.header}>
-        <Text style={styles.title}>Tradução de Libras</Text>
-        <Text style={styles.subtitle}>
-          Selecione um vídeo para traduzir os sinais de libras
-        </Text>
+        <Text style={[styles.title, {
+          color: themeColors.text,
+          textShadowColor: '#000',
+          textShadowOffset: { width: -1, height: 1 },
+          textShadowRadius: 1,
+          marginTop: 32
+        }]}>Tradução de Libras</Text>
+        <Text style={[styles.subtitle, { color: themeColors.textSecondary, marginTop: 16 }]}>Selecione um vídeo para traduzir os sinais de libras</Text>
       </View>
 
       <View style={styles.videoContainer}>
@@ -207,47 +240,45 @@ export default function VideoRecorderScreen() {
             isLooping
           />
         ) : (
-          <View style={styles.placeholderContainer}>
-            <MaterialIcons name="video-library" size={64} color="#666" />
-            <Text style={styles.placeholderText}>
-              Nenhum vídeo selecionado
-            </Text>
+          <View style={[styles.placeholderContainer, { backgroundColor: themeColors.inputBackground }] }>
+            <MaterialIcons name="video-library" size={64} color={themeColors.textSecondary} />
+            <Text style={[styles.placeholderText, { color: themeColors.textSecondary }]}>Nenhum vídeo selecionado</Text>
           </View>
         )}
       </View>
 
       <View style={styles.controls}>
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: themeColors.buttonBackground }]}
           onPress={pickVideo}
           disabled={isProcessing}
         >
-          <MaterialIcons name="upload-file" size={24} color="white" />
-          <Text style={styles.buttonText}>Selecionar Vídeo</Text>
+          <MaterialIcons name="upload-file" size={24} color={themeColors.text} />
+          <Text style={[styles.buttonText, { color: themeColors.text }]}>Selecionar Vídeo</Text>
         </TouchableOpacity>
 
         {selectedVideo && !isProcessing && (
           <TouchableOpacity
-            style={[styles.button, styles.processButton]}
+            style={[styles.button, styles.processButton, { backgroundColor: '#34C759' }]}
             onPress={processVideo}
           >
             <MaterialIcons name="translate" size={24} color="white" />
-            <Text style={styles.buttonText}>Traduzir</Text>
+            <Text style={[styles.buttonText, { color: 'white' }]}>Traduzir</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {isProcessing && (
         <View style={styles.processingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.processingText}>Processando vídeo...</Text>
+          <ActivityIndicator size="large" color={themeColors.text} />
+          <Text style={[styles.processingText, { color: themeColors.textSecondary }]}>Processando vídeo...</Text>
         </View>
       )}
 
       {prediction && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultTitle}>Tradução:</Text>
-          <Text style={styles.resultText}>{prediction}</Text>
+        <View style={[styles.resultContainer, { backgroundColor: themeColors.buttonBackground }] }>
+          <Text style={[styles.resultTitle, { color: themeColors.text }]}>Tradução:</Text>
+          <Text style={[styles.resultText, { color: themeColors.textSecondary }]}>{prediction}</Text>
         </View>
       )}
     </View>
@@ -257,21 +288,38 @@ export default function VideoRecorderScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     padding: 20,
   },
   header: {
     marginBottom: 20,
+    alignItems: 'center',
+  },
+  headerIcons: {
+    width: '100%',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  iconContainer: {
+    padding: 8,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerImage: {
+    width: 24,
+    height: 24,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
     marginTop: 8,
   },
@@ -306,7 +354,6 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
@@ -316,7 +363,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#34C759',
   },
   buttonText: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
